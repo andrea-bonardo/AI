@@ -9,26 +9,26 @@ import matplotlib.pyplot as plt
 import disegno as d
 
 
-
-
 class NeuronLayer():
     def __init__(self, number_of_outputs, number_of_inputs_per_neuron,number_of_prec_neurons, number_of_layer):
         
         #per creare il file layer.txt e bias.txt da zero
-        #"""
-        with open("layer.txt", "a") as f:
-            for i in range(number_of_inputs_per_neuron):
-                for j in range(number_of_outputs):
-                    f.write(f"{(random.randint(51,151)-100)/100} ")
-                f.write("\n")
-        f.close()  
-        """
-        with open("bias.txt", "a") as f_bias:
-            for i in range(number_of_outputs):
-                f_bias.write(f"{(random.randint(51,151)-100)/100} ")
-                f_bias.write("\n")
-        f_bias.close()
-        """
+        #check if file exists
+        if not os.path.exists("layer.txt"):
+            with open("layer.txt", "a") as f:
+                for i in range(number_of_inputs_per_neuron):
+                    for j in range(number_of_outputs):
+                        f.write(f"{(random.randint(51,151)-100)/100} ")
+                    f.write("\n")
+            f.close()  
+        
+        if not os.path.exists("bias.txt"):
+            with open("bias.txt", "a") as f_bias:
+                for i in range(number_of_outputs):
+                    f_bias.write(f"{(random.randint(51,151)-100)/100} ")
+                    f_bias.write("\n")
+            f_bias.close()
+        
         
         self.synaptic_weights = np.loadtxt("layer.txt",dtype=float,skiprows=number_of_prec_neurons,max_rows = number_of_inputs_per_neuron)
         self.bias = np.loadtxt("bias.txt",dtype=float,skiprows=number_of_layer,max_rows = number_of_outputs)
@@ -55,11 +55,8 @@ class NeuralNetwork():
     def loss_derivative_respect_softmax(self, softmax, training_set_outputs):
         return softmax - training_set_outputs
 
-    def train(self, training_set_inputs, training_set_outputs, number_of_training_iterations, learning_rate, n_batch, layer2_graph, lenght):
+    def train(self, training_set_inputs, training_set_outputs, number_of_training_iterations, learning_rate, n_batch, layer2_graph, lenght, start):
         for self.iteration in range(number_of_training_iterations):
-                              
-            if self.iteration == 0:
-                start=time.time()
 
             output_from_layer_1, output_from_layer_2= self.think(training_set_inputs)
 
@@ -93,8 +90,10 @@ class NeuralNetwork():
                 learning_rate = learning_rate*0.99
                 percentuale=(n_batch+(self.iteration/number_of_training_iterations))/lenght*100            
                 os.system("cls")
-                print(f"Percentuale: {percentuale:.3f}%")
-                print(f"Tempo previsto totale: {resultTot}")
+
+        print(f"⬜️"*int(percentuale//5),'⬛️'*int((100-percentuale)//5), end=" ")
+        print(f"Percentuale: {percentuale:.3f}%")
+        print(f"Tempo previsto totale: {resultTot}")
 
         layer2_graph.append(loss)
         
@@ -141,8 +140,8 @@ if __name__ == "__main__":
         
         training_set_outputs = np.eye(10)[training_set_outputs]
 
-        number_of_training_iterations = 150
-        learning_rate = 0.01
+        number_of_training_iterations = 200
+        learning_rate = 0.001
         layer4_graph = []
 
         b_s = 30
@@ -153,12 +152,18 @@ if __name__ == "__main__":
 
      
         for i in range(lenght):
-            neural_network.train(training_set_inputs[i*b_s:(i+1)*b_s], training_set_outputs[i*b_s:(i+1)*b_s], number_of_training_iterations, learning_rate, i, layer2_graph, lenght)
+            start=time.time()
+            neural_network.train(training_set_inputs[i*b_s:(i+1)*b_s], training_set_outputs[i*b_s:(i+1)*b_s], number_of_training_iterations, learning_rate, i, layer2_graph, lenght, start)
             neural_network.layer1.synaptic_weights = np.loadtxt("layer.txt",dtype=float,skiprows=0,max_rows = 28*28)
             neural_network.layer1.bias = np.loadtxt("bias.txt",dtype=float,skiprows=0,max_rows = 128)
             neural_network.layer2.synaptic_weights = np.loadtxt("layer.txt",dtype=float,skiprows=28*28,max_rows = 128)
             neural_network.layer2.bias = np.loadtxt("bias.txt",dtype=float,skiprows=128,max_rows = 10)
+            os.system("cls")
 
+
+
+        print("Percentuale: 100%")
+        print("⬜️"*20)
         plt.plot(layer2_graph)
         plt.title('Test')
         plt.xlabel('Iteration')
