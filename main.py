@@ -91,9 +91,9 @@ class NeuralNetwork():
                 percentuale=(n_batch+(self.iteration/number_of_training_iterations))/lenght*100            
                 os.system("cls")
 
-        print(f"⬜️"*int(percentuale//5),'⬛️'*int((100-percentuale)//5), end=" ")
-        print(f"Percentuale: {percentuale:.3f}%")
-        print(f"Tempo previsto totale: {resultTot}")
+                print(f"⬜️"*int(percentuale//5),'⬛️'*int((100-percentuale)//5), end=" ")
+                print(f"Percentuale: {percentuale:.3f}%")
+                print(f"Tempo previsto totale: {resultTot}")
 
         layer2_graph.append(loss)
         
@@ -113,11 +113,6 @@ class NeuralNetwork():
         output_from_layer1 = self.__relu(np.dot(inputs, self.layer1.synaptic_weights)+self.layer1.bias)
         output_from_layer2 = self.__softmax(np.dot(output_from_layer1, self.layer2.synaptic_weights)+self.layer2.bias)
         return output_from_layer1, output_from_layer2
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -140,7 +135,7 @@ if __name__ == "__main__":
         
         training_set_outputs = np.eye(10)[training_set_outputs]
 
-        number_of_training_iterations = 200
+        number_of_training_iterations = 2
         learning_rate = 0.001
         layer4_graph = []
 
@@ -202,5 +197,3 @@ if __name__ == "__main__":
         print(f" {output[0][i]*100:.4f}%", end=" ")
     predicted_class = np.argmax(output[0])
     print (f"\n Otteniamo: {predicted_class:.0f} \n")
-
-    
